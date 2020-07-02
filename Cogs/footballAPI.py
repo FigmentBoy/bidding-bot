@@ -30,8 +30,27 @@ class footballAPI(commands.Cog):
         return await ctx.send(embed=discord.Embed(title='Success!', description=f"Changed your bid of {player} from {oldamount} to {amount}", color=discord.Color.green()))
         
         
+    @commands.command(aliases=['vb'])
+    async def viewbids(self, ctx):
+        string = ""
+        if ctx.channel.name != str(ctx.author.id):
+            await ctx.message.delete()
+            raise commands.PrivateMessageOnly(message='You can\'t run this command outside of your own private message! The command you typed is being deleted for secrecy')
+        else:
+            with open('Cogs/data.json', 'r') as data_file:
+                data = json.loads(data_file.read() or '{}')
+                mdata = data.get(str(ctx.author.id)) or None
+                if mdata:
+                    for k in dict(mdata):
+                        string += f'`{k}`: `{dict(mdata)[k]}`\n'
+                else:
+                    return await ctx.send('You have no bids!')
             
+            n = 4000
+            strings = [string[i:i+n] for i in range(0, len(string), n)]
 
+            for s in strings:
+                await ctx.send(s)
 
     @commands.command(aliases=['cc'])
     async def createchannel(self, ctx):
