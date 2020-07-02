@@ -2,6 +2,8 @@ from discord.ext import commands
 import discord
 import json
 import asyncio
+import shutil
+import datetime
 
 class footballAPI(commands.Cog):
     def __init__(self, bot):
@@ -83,6 +85,7 @@ class footballAPI(commands.Cog):
     @commands.command()
     @commands.has_permissions(manage_guild=True)
     async def get(self, ctx):
+        shutil.copyfile('Cogs/data.json', 'Backups/' + str(unix_time_millis(datetime.datetime.now())) + '.json')
         string = ""
         with open('Cogs/data.json', 'r') as data_file:
             data = json.loads(data_file.read() or '{}')
@@ -106,5 +109,13 @@ class footballAPI(commands.Cog):
 
         for s in strings:
             await ctx.send(s)
+        
+        if not string:
+            await ctx.send('No bids!')
+
+epoch = datetime.datetime.utcfromtimestamp(0)
+
+def unix_time_millis(dt):
+    return (dt - epoch).total_seconds() * 1000.0
 
 setup = lambda bot:bot.add_cog(footballAPI(bot))
